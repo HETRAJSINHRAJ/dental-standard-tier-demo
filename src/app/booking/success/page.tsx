@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getAppointment } from '@/lib/firebase/firestore';
 import type { Appointment } from '@/types/firebase';
@@ -8,7 +8,7 @@ import { CheckCircle, Calendar, Mail, Phone, Home, Loader2 } from 'lucide-react'
 import Link from 'next/link';
 import { toast } from 'sonner';
 
-export default function BookingSuccessPage() {
+function BookingSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const appointmentId = searchParams.get('appointmentId');
@@ -281,5 +281,20 @@ END:VCALENDAR`;
         </div>
       </div>
     </div>
+  );
+}
+
+// Force dynamic rendering to prevent prerendering
+export const dynamic = 'force-dynamic';
+
+export default function BookingSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-12 h-12 animate-spin text-primary" />
+      </div>
+    }>
+      <BookingSuccessContent />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { getService, getProvider, createAppointment } from '@/lib/firebase/firestore';
@@ -9,7 +9,7 @@ import type { Service, Provider } from '@/types/firebase';
 import { Loader2, ArrowLeft, Calendar, Clock, User, DollarSign, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function ConfirmBookingPage() {
+function ConfirmBookingContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -310,5 +310,20 @@ export default function ConfirmBookingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Force dynamic rendering to prevent prerendering
+export const dynamic = 'force-dynamic';
+
+export default function ConfirmBookingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-12 h-12 animate-spin text-primary" />
+      </div>
+    }>
+      <ConfirmBookingContent />
+    </Suspense>
   );
 }
